@@ -10,7 +10,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -40,7 +40,29 @@ public class CartServiceTest {
         when(cartRepositoryMock.findAll()).thenReturn(Arrays.asList(new Cart(1,itemArrayList ,40)));
         assertEquals(40,cartService.getAll().get(0).getTotalPrice());
     }
+@Test
+    public void addItemsToCart() throws Exception {
+        ArrayList<Item> newCartItemList = new ArrayList<Item>();
+        Item item3 = new Item(1,"pant",1,200);
+        Item item4 = new Item(2,"dress",1,40);
+        newCartItemList.add(item3);
+        newCartItemList.add(item4);
 
+        Cart cart = new Cart(1, newCartItemList, 240 );
+//        Item item1 = new Item(1,"pant",1,100);
+//        cart.setItems(new ArrayList<>());
+
+        when(cartRepositoryMock.findById(cart.getId())).thenReturn(Optional.of(cart));
+        cartService.addItems(cart.getId(), newCartItemList);
+
+
+        verify(cartRepositoryMock).save(cart);
+        verify(cartRepositoryMock).findById(cart.getId());
+
+        ArrayList<Item> expected = cartService.getCartById(cart.getId()).getItems();
+        assertThat(expected).isSameAs(cart.getItems());
+        verify(cartRepositoryMock).save(cart);
+    }
 
     @Test
     public  void createCart(){
