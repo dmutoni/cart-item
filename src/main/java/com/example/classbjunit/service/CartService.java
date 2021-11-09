@@ -54,6 +54,21 @@ public class CartService {
         return cartRepository.save(updateCart);
 
     }
+      public Cart addItems(int cartId, ArrayList<Item> items) throws Exception {
+        Cart cart = getCartById(cartId);
+        cart.setItems(items);
+
+        int totalPrices = 0;
+        for (Item item: items){
+            totalPrices += item.getPrice();
+        }
+        cart.setTotalPrice(totalPrices);
+
+
+        cartRepository.save(cart);
+        return cart;
+    }
+}
     public Cart delete(int id) throws  Exception{
 
         Optional<Cart> cartOptional = cartRepository.findById(id);
